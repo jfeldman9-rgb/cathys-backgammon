@@ -15,6 +15,12 @@
     jason: 'assets/jason.svg',
   };
 
+  // Optional skins from assets/chatgpt-art/ — used only if the file exists, otherwise
+  // the CSS console board / SVG Jason stay. See assets/chatgpt-art/README.md.
+  function probe(src, onOk) { var im = new Image(); im.onload = onOk; im.src = src; }
+  probe('assets/chatgpt-art/board-table.png', function () { $('board-wrap').classList.add('has-table'); });
+  probe('assets/chatgpt-art/avatar-jason.png', function () { ART.jason = 'assets/chatgpt-art/avatar-jason.png'; $('avatar-1').src = ART.jason; });
+
   // ---------- tiny sound kit ----------
   var soundOn = true, actx = null;
   function beep(freq, dur, when) {

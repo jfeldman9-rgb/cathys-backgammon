@@ -192,6 +192,10 @@ html, body {
   box-shadow: inset 0 0 0 4px var(--cheese-deep), 0 0 0 3px var(--bezel-3);
   padding: 14px;
 }
+/* optional photo/illustrated table skin (assets/chatgpt-art/board-table.png), toggled by app.js */
+#board-wrap.has-table {
+  background: url("assets/chatgpt-art/board-table.png") center / cover no-repeat, var(--cheese-board);
+}
 #board {
   flex: 1; display: grid;
   grid-template-columns: 1fr 78px 1fr; grid-template-rows: 1fr 1fr;
