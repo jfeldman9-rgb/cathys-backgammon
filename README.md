@@ -1,16 +1,32 @@
 # Cathy's Backgammon 🧀
 
-The **Cheese Cathy Edition** — a big, friendly, iPad-first backgammon game.
-Huge touch targets, big readable type, glowing legal moves, fat Swiss-hole
-cheese checkers vs grape checkers. No tiny chrome, no squinting.
+The **Cheese Cathy Edition** — a big, friendly backgammon console built for an
+**iPad held sideways**. Huge touch targets, big readable type, glowing legal moves,
+fat Swiss-hole cheese checkers vs grape checkers. No tiny chrome, no squinting.
 
-## Play on iPad (Safari)
+![Mid-game on an iPad in landscape](screenshots/02-midgame.png)
 
-1. Open the GitHub Pages link (below) in **Safari**, landscape orientation.
-2. **Add to Home Screen** for the full console feel:
-   - Tap **Share** → **Add to Home Screen** → **Add**.
-   - Launch it from the home screen icon — it runs fullscreen and **offline**
-     after the first visit.
+## Play on iPad (Safari) — hold it sideways
+
+The game is laid out like a gym-bike console: the **board fills the middle**
+(~60% of the screen), Cathy and Jason live on the **left rail**, the fat **dice /
+ROLL** and the keypad live on the **right rail**. Nothing scrolls, nothing zooms.
+
+1. **Turn the iPad to landscape** (long edge down). Portrait still works — the
+   board stacks on top of the console — but landscape is the real thing.
+2. Open the GitHub Pages link in **Safari**.
+3. **Add to Home Screen** for the full-screen console:
+   - Tap **Share** (the box with the arrow) → **Add to Home Screen** → **Add**.
+   - Launch it from the home-screen icon (Cathy's cheese checker). It runs
+     **full screen** — no Safari bars — and **offline** after the first visit.
+4. If the iPad has a rotation lock on, swipe down from the top-right corner and
+   tap the lock icon so the screen can turn.
+
+Tips for Mom:
+- The **whole point** (the long triangle) is the tap target, not just the checker.
+- Tap the **dice** or the big **ROLL** button — both roll.
+- **Ask Cathy** lights up the move she'd make. **Undo** takes the last one back.
+- If the board ever looks squished, rotate the iPad once; it re-fits itself.
 
 ## How to play (30 seconds)
 
@@ -61,13 +77,35 @@ In-browser smoke (scripted taps, a live timed Robo-Jason turn, full game; fails 
 http://localhost:8000/index.html?shot=smoke&seed=2026   # expect SMOKE-OK
 ```
 
-Screenshot helpers (iPad-ish 1366×1024):
+Screenshot helpers (render at iPad landscape sizes: 1024×768, 1180×820, 1194×834, 1366×1024):
 
 ```
 ?shot=title   # title screen        ?shot=mid&seed=2026   # Cathy mid-move, banter
 ?shot=hit     # hound-swap moment    ?shot=win             # win screen
 ```
 
+`screenshots/` holds the four 1024×768 shots the manifest points at plus
+`ipad-<w>x<h>-*.png` at the other iPad sizes and one portrait (768×1024) fallback.
+
+### Layout notes (landscape console)
+
+- `#screen-game` is `position: fixed; height: 100dvh` with `grid-template-rows: auto 1fr`
+  — a thin LED header, then `.game-main`, a 3-column grid
+  `[--rail-l] [minmax(0,1fr)] [--rail-r]`. Rails are `clamp()` widths so the board keeps
+  ~59% of the width on every iPad; nothing in the console can scroll the page.
+- Checker diameter is a CSS variable (`--ck`). `app.js` `fitBoardNow()` measures a point and
+  sets `--ck` so checkers fill the point width and five always stack in a half-board;
+  the BAR column is `--ck + 14px`. A `ResizeObserver` re-fits on rotate / resize.
+- The home tray picks a 5×3, 8×2 or 15×1 grid (`--cols`, `--slot`) to fill whatever
+  height is left between the dice and the keypad.
+- Dice are `aspect-ratio: 1` and fill the rail two-across (2×2 on doubles); pips are CSS
+  radial-gradients keyed off `data-v`, so they scale with the die.
+- `viewport-fit=cover` + `env(safe-area-inset-*)` padding, `apple-mobile-web-app-capable`,
+  `touch-action: none` on the console and a `touchmove` guard stop pinch/rubber-band.
+- Portrait (`orientation: portrait`) stacks board over `[players | console]`;
+  phones (≤640px) fall back to a scrolling single column.
+
 Files: `engine.js` (rules, no deps, browser+node), `ai.js` (soft 1-ply AI),
-`app.js` (UI, voice lines, presence, flow), `styles.css` (console skin), `sw.js` (offline cache),
-`manifest.webmanifest` (Add to Home Screen), `screenshots/`.
+`app.js` (UI, voice lines, presence, flow, console fit), `styles.css` (console skin + grid),
+`sw.js` (offline cache), `manifest.webmanifest` (Add to Home Screen; PNG icons in `assets/`),
+`screenshots/`.

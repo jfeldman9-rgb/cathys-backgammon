@@ -1,14 +1,25 @@
 {
   "name": "Cathy's Backgammon",
   "short_name": "Backgammon",
-  "description": "Cheese Cathy edition backgammon — big, friendly, iPad-first.",
+  "description": "Cheese Cathy edition backgammon — a big, friendly console built for an iPad held sideways.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["fullscreen", "standalone"],
   "orientation": "landscape",
-  "background_color": "#0B3D20",
-  "theme_color": "#4E1A82",
+  "background_color": "#1B1F24",
+  "theme_color": "#1B1F24",
+  "categories": ["games", "entertainment"],
   "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
     { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "screenshots": [
+    { "src": "screenshots/02-midgame.png", "sizes": "1024x768", "type": "image/png", "form_factor": "wide", "label": "Mid-game: Cathy's cheese checkers vs Jason's grapes, glowing legal moves" },
+    { "src": "screenshots/01-title.png", "sizes": "1024x768", "type": "image/png", "form_factor": "wide", "label": "Title screen" },
+    { "src": "screenshots/03-win.png", "sizes": "1024x768", "type": "image/png", "form_factor": "wide", "label": "Cathy wins" },
+    { "src": "screenshots/ipad-768x1024-midgame.png", "sizes": "768x1024", "type": "image/png", "form_factor": "narrow", "label": "Portrait fallback: board on top, console below" }
   ]
 }
