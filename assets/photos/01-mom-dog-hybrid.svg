@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="img" aria-label="Playful portrait of Cathy with her big black and tan dog at a tropical overlook">
+  <defs>
+    <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BFE3F2"/><stop offset="1" stop-color="#E8F6EE"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#sky2)"/>
+  <ellipse cx="90" cy="70" rx="70" ry="22" fill="#fff" opacity=".8"/>
+  <ellipse cx="300" cy="50" rx="80" ry="22" fill="#fff" opacity=".8"/>
+  <path d="M0 210 Q90 150 180 200 T400 185 V320 H0 Z" fill="#2F7D4F"/>
+  <path d="M0 250 Q120 205 230 248 T400 240 V340 H0 Z" fill="#256B43"/>
+  <rect x="0" y="272" width="400" height="10" fill="#4A5560"/>
+  <rect x="0" y="312" width="400" height="8" fill="#4A5560"/>
+  <rect x="40" y="272" width="10" height="120" fill="#39424C"/>
+  <rect x="350" y="272" width="10" height="120" fill="#39424C"/>
+  <rect x="0" y="330" width="400" height="170" fill="#6B5B4C"/>
+  <!-- big dog body (black &amp; tan) -->
+  <g>
+    <ellipse cx="215" cy="380" rx="95" ry="60" fill="#20242A"/>
+    <ellipse cx="215" cy="400" rx="60" ry="38" fill="#C98A4B"/>
+    <rect x="140" y="400" width="26" height="70" rx="13" fill="#20242A"/>
+    <rect x="143" y="440" width="26" height="30" rx="10" fill="#C98A4B"/>
+    <rect x="180" y="405" width="26" height="66" rx="13" fill="#20242A"/>
+    <rect x="183" y="442" width="26" height="28" rx="10" fill="#C98A4B"/>
+    <rect x="248" y="405" width="26" height="66" rx="13" fill="#C98A4B"/>
+    <rect x="286" y="400" width="26" height="70" rx="13" fill="#C98A4B"/>
+    <path d="M300 360 Q350 350 355 300 Q360 335 330 365 Q315 375 300 372z" fill="#20242A"/>
+    <ellipse cx="352" cy="296" rx="10" ry="16" fill="#C98A4B"/>
+  </g>
+  <!-- Cathy upper body rising from the fun -->
+  <g>
+    <path d="M165 300 Q215 285 265 300 L258 345 Q215 355 172 345 Z" fill="#F7F3E8" stroke="#D8D2C0" stroke-width="3"/>
+    <ellipse cx="215" cy="245" rx="36" ry="40" fill="#8A6F5C"/>
+    <ellipse cx="215" cy="247" rx="28" ry="32" fill="#F2C39B"/>
+    <path d="M187 212 Q215 188 243 212 Q247 246 241 264 Q241 236 215 228 Q189 236 189 264 Q183 246 187 212z" fill="#4A4A52"/>
+    <circle cx="205" cy="247" r="3.2" fill="#333"/>
+    <circle cx="225" cy="247" r="3.2" fill="#333"/>
+    <path d="M205 264 Q215 272 225 264" stroke="#8A4B3A" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <rect x="228" y="292" width="46" height="62" rx="12" fill="#7B2FBE" stroke="#4E1A82" stroke-width="4"/>
+    <path d="M228 292 L208 278" stroke="#4E1A82" stroke-width="7" stroke-linecap="round"/>
+    <path d="M168 306 Q152 344 160 366" stroke="#F2C39B" stroke-width="14" stroke-linecap="round"/>
+    <path d="M262 306 Q280 344 276 366" stroke="#F2C39B" stroke-width="14" stroke-linecap="round"/>
+    <rect x="150" y="360" width="20" height="12" rx="6" fill="#fff" stroke="#ccc" stroke-width="2"/>
+  </g>
+  <g font-family="Georgia,serif" font-size="26" font-weight="bold" fill="#4E1A82">
+    <text x="200" y="40" text-anchor="middle">Cathy &amp; Co.</text>
+  </g>
+</svg>

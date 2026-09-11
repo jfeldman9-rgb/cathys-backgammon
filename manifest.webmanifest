@@ -1,0 +1,14 @@
+{
+  "name": "Cathy's Backgammon",
+  "short_name": "Backgammon",
+  "description": "Cheese Cathy edition backgammon — big, friendly, iPad-first.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0B3D20",
+  "theme_color": "#4E1A82",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

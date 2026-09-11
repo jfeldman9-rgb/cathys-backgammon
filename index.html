@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cathy's Backgammon 🧀</title>
+<meta name="description" content="Cathy's Backgammon — Cheese Cathy edition. A big, friendly backgammon game for iPad.">
+<meta name="theme-color" content="#5A1E8E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon.svg">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ TITLE SCREEN ============ -->
+<section id="screen-title" class="screen">
+  <div class="title-card">
+    <div class="title-photo-wrap">
+      <img id="title-photo" src="assets/photos/02-cheese-cathy.png" onerror="this.onerror=null;this.src='assets/photos/02-cheese-cathy.svg'" alt="Cheese Cathy in her Swiss-cheese costume">
+    </div>
+    <div class="title-text">
+      <div class="brand-eyebrow">🧀 The Cheese Cathy Edition 🧀</div>
+      <h1>Cathy&rsquo;s Backgammon</h1>
+      <p class="tagline">Big board. Fat checkers. Zero squinting.</p>
+      <div class="menu-buttons">
+        <button id="btn-vs-ai" class="fat-btn primary">🎲 Play vs Computer</button>
+        <button id="btn-hotseat" class="fat-btn secondary">👥 Cathy vs Jason<br><span class="sub">pass &amp; play</span></button>
+        <button id="btn-how" class="fat-btn ghost">❓ How to Play</button>
+      </div>
+      <p class="hint-line">Tip: tap a glowing checker, then tap where it should go.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GAME SCREEN ============ -->
+<section id="screen-game" class="screen hidden">
+  <div id="turn-banner" role="status">Cathy&rsquo;s turn</div>
+  <div class="game-main">
+    <div id="board-wrap">
+      <div id="board" aria-label="Backgammon board"></div>
+      <div id="board-msg" role="status"></div>
+    </div>
+    <aside id="side">
+      <div class="panel" id="dice-panel">
+        <div class="panel-label">Dice</div>
+        <div id="dice-row">
+          <button id="die-0" class="die" aria-label="Die 1">⚀</button>
+          <button id="die-1" class="die" aria-label="Die 2">⚀</button>
+        </div>
+        <button id="btn-roll" class="fat-btn primary">🎲 ROLL</button>
+      </div>
+      <div class="panel" id="off-panel">
+        <div class="panel-label">Borne off 🏁</div>
+        <div class="off-row">
+          <div class="off-box cheese"><span class="off-name">🧀 Cathy</span>
+            <div class="off-bar"><div id="off-fill-0"></div></div>
+            <span id="off-count-0" class="off-count">0/15</span>
+          </div>
+          <div class="off-box grape"><span class="off-name">🍇 <span id="off-name-1">Rival</span></span>
+            <div class="off-bar"><div id="off-fill-1"></div></div>
+            <span id="off-count-1" class="off-count">0/15</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel btn-grid">
+        <button id="btn-undo" class="fat-btn">↩️ Undo</button>
+        <button id="btn-hint" class="fat-btn">💡 Hint</button>
+        <button id="btn-pass" class="fat-btn hidden">⏭ Done</button>
+        <button id="btn-new" class="fat-btn">🔄 New</button>
+        <button id="btn-menu" class="fat-btn">🏠 Menu</button>
+        <button id="btn-sound" class="fat-btn" aria-label="Toggle sound">🔊</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ HELP OVERLAY ============ -->
+<div id="overlay-help" class="overlay hidden" role="dialog" aria-label="How to play">
+  <div class="sheet">
+    <h2>How to Play 🧀</h2>
+    <ol class="how-list">
+      <li>🎲 Tap <b>ROLL</b>. You are the <b>cheese checkers</b> 🧀.</li>
+      <li>✨ Tap a <b>glowing</b> checker, then tap a glowing landing spot.</li>
+      <li>🟣 Land alone on a purple checker to <b>hit it to the bar</b>.</li>
+      <li>🚧 You must bring checkers back from the <b>middle bar</b> first.</li>
+      <li>🏁 Get all 15 home, then bear them off. First one out <b>wins!</b></li>
+      <li>🎲🎲 Doubles = <b>4 moves</b>. Lucky you!</li>
+    </ol>
+    <button id="btn-close-help" class="fat-btn primary">Got it! ▶</button>
+  </div>
+</div>
+
+<!-- ============ WIN OVERLAY ============ -->
+<div id="overlay-win" class="overlay hidden" role="dialog" aria-label="Winner">
+  <div class="sheet win-sheet">
+    <img id="win-photo" src="assets/photos/03-bama-2026.png" onerror="this.onerror=null;this.src='assets/photos/03-bama-2026.svg'" alt="Celebration photo">
+    <h2 id="win-title">🧀 Cathy wins!</h2>
+    <p id="win-sub">Bama 2026: It was worth it. 🏆</p>
+    <div class="menu-buttons">
+      <button id="btn-again" class="fat-btn primary">🔄 Play Again</button>
+      <button id="btn-win-menu" class="fat-btn ghost">🏠 Menu</button>
+    </div>
+  </div>
+</div>
+
+<div id="smoke-result" class="hidden"></div>
+
+<script src="engine.js"></script>
+<script src="ai.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
