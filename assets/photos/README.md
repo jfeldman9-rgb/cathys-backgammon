@@ -1,16 +1,16 @@
 # Cathy's photos
 
-The game looks for three PNGs (exact names):
+The three originals (committed, used in-game):
 
-- `01-mom-dog-hybrid.png` — Cathy + dog lower body at the tropical overlook
-- `02-cheese-cathy.png` — Cheese Cathy costume + "Cheese Cathy" sign (title screen)
-- `03-bama-2026.png` — "I made it!" / "Bama 2026: It was worth it." (win screen)
+| File | Where it shows |
+|---|---|
+| `02-cheese-cathy.png` | Title screen hero; face medallion on every one of Cathy's checkers |
+| `01-mom-dog-hybrid.png` | Title polaroid; "release the hound" checker faces after a hit; rival-wins screen |
+| `03-bama-2026.png` | Title polaroid; Cathy's HUD avatar when she bears off / gets all home; win screen |
 
-Copy the originals here, e.g.:
+`derived/*-face.jpg` are 400×400 face crops cut from the PNGs above (used for the
+checker medallions so they stay crisp at 40–60px). Regenerate with Pillow if the
+originals change.
 
-```bash
-cp ~/photos/01-mom-dog-hybrid.png ~/photos/02-cheese-cathy.png ~/photos/03-bama-2026.png assets/photos/
-```
-
-Until then the game automatically falls back to the bundled `.svg`
-illustrations with the same names, so it always works — online or off.
+The `.svg` files are same-scene illustrated fallbacks used only if a PNG fails to load.
+In-play HUD avatars live in `../chatgpt-art/`.
