@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Jason avatar">
+  <defs>
+    <radialGradient id="bg" cx="40%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#9B5BD6"/><stop offset="1" stop-color="#4E1A82"/>
+    </radialGradient>
+  </defs>
+  <circle cx="200" cy="200" r="200" fill="url(#bg)"/>
+  <circle cx="200" cy="170" r="110" fill="#B8E356" stroke="#1B1F24" stroke-width="10"/>
+  <text x="200" y="218" text-anchor="middle" font-family="Georgia,serif" font-size="150" font-weight="bold" fill="#1B1F24">J</text>
+  <path d="M120 330 Q200 290 280 330" stroke="#FFC93C" stroke-width="12" fill="none" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,376 @@
+/* Cathy's Backgammon — Cheese Cathy edition.
+   Skin: Life Fitness bike console (charcoal bezel, LED readouts) wrapped around a
+   cheese-board playing surface. iPad-landscape-first, huge targets, big type. */
+:root {
+  --cheese: #FFC93C;
+  --cheese-deep: #E39B12;
+  --cheese-pale: #FFEFC2;
+  --cheese-board: #FBE7B2;
+  --grape: #7B2FBE;
+  --grape-deep: #4E1A82;
+  --grape-pale: #D9B8F5;
+  --lime: #B8E356;
+  --lime-glow: #D9FF7A;
+  --cream: #FFF8E7;
+  --bezel: #1B1F24;
+  --bezel-2: #2A2F36;
+  --bezel-3: #3A414A;
+  --ink: #2A1A00;
+  --ck: clamp(38px, 5.6vmin, 58px); /* checker diameter */
+  --radius: 18px;
+  --led-font: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0; padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Verdana, sans-serif;
+  background: var(--bezel);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 20px;
+}
+.hidden { display: none !important; }
+.photo { object-fit: cover; }
+
+/* ---------- fat buttons ---------- */
+.fat-btn {
+  font-size: 1.35rem; font-weight: 800;
+  padding: 1rem 1.4rem; min-height: 64px;
+  border-radius: var(--radius);
+  border: 4px solid var(--ink);
+  background: var(--cream); color: var(--ink);
+  cursor: pointer; box-shadow: 0 5px 0 var(--ink);
+  touch-action: manipulation; line-height: 1.15;
+}
+.fat-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--ink); }
+.fat-btn.primary { background: var(--cheese); }
+.fat-btn.secondary { background: var(--lime); }
+.fat-btn:disabled { opacity: 0.4; cursor: default; }
+.fat-btn .sub { font-size: .95rem; font-weight: 600; }
+
+/* ---------- title screen ---------- */
+#screen-title {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+  background:
+    radial-gradient(circle at 15% 20%, var(--grape) 0 90px, transparent 91px),
+    radial-gradient(circle at 85% 80%, var(--cheese) 0 110px, transparent 111px),
+    radial-gradient(circle at 80% 15%, var(--lime) 0 60px, transparent 61px),
+    linear-gradient(160deg, var(--grape-deep), #3B1163 60%, var(--grape-deep));
+}
+.title-card {
+  display: flex; gap: 32px; align-items: center;
+  background: var(--cream); border: 6px solid var(--ink); border-radius: 28px;
+  padding: 28px; max-width: 1180px; width: 100%;
+  box-shadow: 0 12px 0 rgba(0,0,0,.35);
+}
+.title-photo-wrap { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.title-photo-wrap #title-photo {
+  width: min(34vw, 380px); aspect-ratio: 3/4;
+  border-radius: 22px; border: 6px solid var(--cheese-deep); background: var(--cheese-pale); display: block;
+}
+.polaroids { display: flex; gap: 12px; }
+.polaroids img {
+  width: min(16vw, 180px); aspect-ratio: 4/3;
+  border: 5px solid #fff; border-bottom-width: 22px; border-radius: 6px;
+  box-shadow: 0 4px 0 rgba(0,0,0,.25); background: #fff;
+}
+.polaroids img:first-child { transform: rotate(-4deg); }
+.polaroids img:last-child { transform: rotate(3deg); }
+.title-text { flex: 1; }
+.brand-eyebrow {
+  display: inline-block; background: var(--grape); color: #fff;
+  font-weight: 800; font-size: 1.05rem; padding: .35rem .9rem; border-radius: 999px; border: 3px solid var(--ink);
+}
+.title-text h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); margin: .4rem 0 .2rem; }
+.tagline { font-size: 1.3rem; margin: .2rem 0 1.2rem; font-weight: 600; }
+.menu-buttons { display: flex; flex-direction: column; gap: 16px; max-width: 480px; }
+.hint-line { margin-top: 1rem; font-size: 1.05rem; opacity: .8; }
+
+/* ---------- console header ---------- */
+#screen-game { min-height: 100vh; display: flex; flex-direction: column; }
+#console-top {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px;
+  padding: 8px 18px;
+  background: linear-gradient(180deg, var(--bezel-3), var(--bezel));
+  border-bottom: 4px solid #000;
+}
+.console-brand {
+  font-family: var(--led-font); font-weight: 800; font-size: .95rem; letter-spacing: .08em;
+  color: var(--cheese);
+}
+.console-brand span { color: #9AA3AD; }
+.console-brand.right { text-align: right; }
+#turn-banner {
+  font-family: var(--led-font);
+  font-size: clamp(1.3rem, 3vmin, 1.8rem); font-weight: 900; text-align: center;
+  padding: .5rem 1.6rem; min-width: 46vw;
+  color: var(--lime-glow); background: #05070A;
+  border: 3px solid #000; border-radius: 12px;
+  box-shadow: inset 0 0 18px rgba(184,227,86,.25), 0 0 14px rgba(184,227,86,.35);
+  text-shadow: 0 0 8px rgba(184,227,86,.9);
+}
+#turn-banner.cheese { color: var(--cheese); text-shadow: 0 0 8px rgba(255,201,60,.9); box-shadow: inset 0 0 18px rgba(255,201,60,.25), 0 0 14px rgba(255,201,60,.35); }
+#turn-banner.grape { color: var(--grape-pale); text-shadow: 0 0 8px rgba(217,184,245,.9); box-shadow: inset 0 0 18px rgba(217,184,245,.2), 0 0 14px rgba(217,184,245,.3); }
+
+/* ---------- console body (brushed charcoal) ---------- */
+.game-main {
+  flex: 1; display: flex; flex-direction: row; gap: 14px; padding: 14px;
+  align-items: stretch; min-height: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 2px, transparent 2px 5px),
+    linear-gradient(180deg, var(--bezel-2), var(--bezel));
+}
+
+/* ---------- left console: players ---------- */
+#players { flex: 0 0 clamp(200px, 19vw, 260px); display: flex; flex-direction: column; gap: 12px; }
+.player-card {
+  background: var(--bezel-2);
+  border: 4px solid #000; border-radius: 20px;
+  padding: 10px; display: flex; flex-direction: column; gap: 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  transition: box-shadow .25s, border-color .25s;
+}
+.player-card.active { border-color: var(--lime); box-shadow: 0 0 0 4px rgba(184,227,86,.25), 0 0 26px rgba(184,227,86,.45); }
+.player-card.cheese.active { border-color: var(--cheese); box-shadow: 0 0 0 4px rgba(255,201,60,.25), 0 0 26px rgba(255,201,60,.5); }
+.avatar-wrap { position: relative; padding-bottom: 26px; }
+.avatar {
+  width: 90%; aspect-ratio: 1/1; display: block; margin: 0 auto;
+  border-radius: 50%; border: 5px solid var(--cheese-deep); background: var(--cheese-pale);
+  object-fit: cover; object-position: 50% 20%;
+  box-shadow: 0 0 0 3px #000, 0 6px 0 rgba(0,0,0,.4);
+}
+.player-card.grape .avatar { border-color: var(--grape-pale); }
+.player-card.active .avatar { box-shadow: 0 0 0 3px #000, 0 0 22px var(--lime-glow); }
+.avatar.swap { animation: pop .45s ease-out; }
+@keyframes pop { 0% { transform: scale(.85) rotate(-3deg); } 60% { transform: scale(1.06) rotate(2deg); } 100% { transform: none; } }
+.name-plate {
+  position: absolute; left: 4px; right: 4px; bottom: 0;
+  background: rgba(5,7,10,.92); color: var(--cheese);
+  font-family: var(--led-font); font-weight: 900; font-size: 1.05rem; letter-spacing: .06em;
+  text-align: center; padding: 4px 6px; border-radius: 8px; border: 2px solid #000;
+}
+.player-card.grape .name-plate { color: var(--grape-pale); }
+.led-row { display: flex; justify-content: space-between; align-items: baseline; padding: 0 4px; }
+.led-label { color: #9AA3AD; font-family: var(--led-font); font-weight: 800; font-size: .9rem; letter-spacing: .1em; }
+.led {
+  font-family: var(--led-font); font-weight: 900; font-size: 1.5rem;
+  color: var(--lime-glow); text-shadow: 0 0 8px rgba(184,227,86,.9);
+  background: #05070A; padding: 0 10px; border-radius: 8px; border: 2px solid #000;
+}
+.bubble {
+  position: relative;
+  background: var(--cream); color: var(--ink);
+  border: 3px solid var(--ink); border-radius: 16px;
+  padding: 10px 12px; font-size: 1.12rem; font-weight: 700; line-height: 1.3;
+  min-height: 3.2rem;
+}
+.bubble::before {
+  content: ""; position: absolute; top: -14px; left: 26px;
+  border: 8px solid transparent; border-bottom-color: var(--ink); border-top: 0;
+}
+.bubble::after {
+  content: ""; position: absolute; top: -9px; left: 28px;
+  border: 6px solid transparent; border-bottom-color: var(--cream); border-top: 0;
+}
+.bubble.fresh { animation: bubblein .3s ease-out; }
+@keyframes bubblein { from { transform: translateY(6px); opacity: .4; } to { transform: none; opacity: 1; } }
+.player-card:not(.active) .bubble { opacity: .75; }
+
+/* ---------- board: cheese board in a console bezel ---------- */
+#board-wrap {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; flex-direction: column;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(227,155,18,.18) 0 14px, transparent 15px),
+    radial-gradient(circle at 78% 62%, rgba(227,155,18,.16) 0 22px, transparent 23px),
+    radial-gradient(circle at 40% 85%, rgba(227,155,18,.14) 0 10px, transparent 11px),
+    radial-gradient(circle at 90% 12%, rgba(227,155,18,.15) 0 9px, transparent 10px),
+    var(--cheese-board);
+  border: 8px solid #000; border-radius: 24px;
+  box-shadow: inset 0 0 0 4px var(--cheese-deep), 0 0 0 3px var(--bezel-3);
+  padding: 14px;
+}
+/* optional photo/illustrated table skin (assets/chatgpt-art/board-table.png), toggled by app.js */
+#board-wrap.has-table {
+  background: url("assets/chatgpt-art/board-table.png") center / cover no-repeat, var(--cheese-board);
+}
+#board {
+  flex: 1; display: grid;
+  grid-template-columns: 1fr 78px 1fr; grid-template-rows: 1fr 1fr;
+  gap: 6px; min-height: 0;
+}
+#board-msg {
+  min-height: 2.6rem; font-size: 1.25rem; font-weight: 800; text-align: center;
+  color: var(--ink); padding-top: 8px;
+}
+
+.quad { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; min-height: 0; }
+#bar-col {
+  grid-row: 1 / span 2; grid-column: 2;
+  background: linear-gradient(180deg, var(--bezel-3), var(--bezel));
+  border: 3px solid #000; border-radius: 14px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; padding: 8px 4px; min-height: 0; overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+}
+.bar-label { color: var(--lime-glow); font-family: var(--led-font); font-weight: 900; font-size: .95rem; letter-spacing: .1em; text-shadow: 0 0 6px rgba(184,227,86,.8); }
+.bar-stack { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 0; }
+#bar-col.selectable { outline: 5px solid var(--lime); cursor: pointer; }
+#bar-col.selected { outline: 5px solid #fff; }
+
+/* points = cheese wedges vs grape wedges */
+.point {
+  position: relative; border-radius: 12px; border: 3px solid transparent;
+  min-height: 0; display: flex; cursor: default; touch-action: manipulation;
+}
+.point.top { flex-direction: column; }
+.point.bottom { flex-direction: column-reverse; }
+.point .tri { position: absolute; inset: 4px; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.point.bottom .tri { clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.point.alt-a .tri {
+  background:
+    radial-gradient(circle at 50% 30%, var(--cheese-deep) 0 5%, transparent 6%),
+    radial-gradient(circle at 42% 52%, var(--cheese-deep) 0 4%, transparent 5%),
+    radial-gradient(circle at 56% 72%, var(--cheese-deep) 0 6%, transparent 7%),
+    linear-gradient(180deg, #FFD65C, var(--cheese));
+}
+.point.bottom.alt-a .tri {
+  background:
+    radial-gradient(circle at 50% 70%, var(--cheese-deep) 0 5%, transparent 6%),
+    radial-gradient(circle at 42% 48%, var(--cheese-deep) 0 4%, transparent 5%),
+    radial-gradient(circle at 56% 28%, var(--cheese-deep) 0 6%, transparent 7%),
+    linear-gradient(0deg, #FFD65C, var(--cheese));
+}
+.point.alt-b .tri { background: linear-gradient(180deg, #9B5BD6, var(--grape-deep)); }
+.point.bottom.alt-b .tri { background: linear-gradient(0deg, #9B5BD6, var(--grape-deep)); }
+.point .pnum {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  font-family: var(--led-font); font-size: .78rem; font-weight: 900; color: var(--lime-glow);
+  background: #05070A; border-radius: 6px; padding: 0 4px; z-index: 3; pointer-events: none;
+  border: 2px solid #000; line-height: 1.3;
+}
+.point.top .pnum { bottom: 2px; }
+.point.bottom .pnum { top: 2px; }
+.checkers {
+  position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center;
+  width: 100%; padding: 8px 2px; pointer-events: none;
+}
+.point.bottom .checkers { flex-direction: column-reverse; }
+
+/* checkers: Cathy = ChatGPT cheese disc with her face inset; Jason = ChatGPT grape disc */
+.checker {
+  position: relative;
+  width: var(--ck); height: var(--ck); border-radius: 50%;
+  border: 0; flex: 0 0 auto; margin-top: -8px;
+  background: center / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 0 rgba(0,0,0,.45));
+}
+.checker:first-child { margin-top: 0; }
+.point.bottom .checker { margin-top: 0; margin-bottom: -8px; }
+.point.bottom .checker:first-child { margin-bottom: 0; }
+.checker.cheese { background-image: url("assets/chatgpt-art/checker-cheese.png"); }
+.checker.cheese::after {
+  content: ""; position: absolute; inset: 19%; border-radius: 50%;
+  background: url("assets/photos/derived/02-cheese-cathy-face.jpg") center / cover;
+  border: 2px solid var(--ink);
+}
+.checker.cheese.face-dog::after { background-image: url("assets/photos/derived/01-mom-dog-hybrid-face.jpg"); }
+.checker.cheese.face-bama::after { background-image: url("assets/photos/derived/03-bama-2026-face.jpg"); }
+.checker.grape { background-image: url("assets/chatgpt-art/checker-grape.png"); }
+.checker-count {
+  z-index: 3; background: #05070A; color: var(--lime-glow);
+  font-family: var(--led-font); font-weight: 900; font-size: 1rem;
+  border-radius: 10px; padding: 0 8px; margin-top: 2px; border: 2px solid #000;
+}
+
+/* legal-move highlights — clarity first */
+.point.src-ok { border-color: var(--lime); background: rgba(184,227,86,.35); cursor: pointer; }
+.point.src-ok .checkers { filter: brightness(1.1) drop-shadow(0 0 6px var(--lime-glow)); }
+.point.selected { border-color: #fff; background: rgba(255,255,255,.55); }
+.point.dest-ok { border-color: var(--lime); background: rgba(184,227,86,.3); cursor: pointer; }
+.point.dest-ok::after {
+  content: "👇"; position: absolute; left: 50%; transform: translateX(-50%);
+  font-size: 2rem; z-index: 4;
+}
+.point.top.dest-ok::after { bottom: 34px; }
+.point.bottom.dest-ok::after { top: 34px; }
+.point.flash { animation: flash .55s ease-in-out 3; }
+@keyframes flash { 50% { background: rgba(184,227,86,.85); } }
+
+/* ---------- right console: dice + controls ---------- */
+#side { flex: 0 0 clamp(240px, 22vw, 300px); display: flex; flex-direction: column; gap: 12px; }
+.panel {
+  background: var(--bezel-2); border: 4px solid #000; border-radius: var(--radius); padding: 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.panel-label { color: #9AA3AD; font-family: var(--led-font); font-weight: 800; font-size: .9rem; letter-spacing: .1em; margin-bottom: 8px; }
+#dice-row { display: flex; gap: 12px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap; }
+.die {
+  width: 84px; height: 84px; font-size: 3.4rem; line-height: 1;
+  background: #fff; color: var(--ink); border: 5px solid var(--ink); border-radius: 18px;
+  cursor: pointer; touch-action: manipulation; display: flex; align-items: center; justify-content: center;
+}
+#dice-row.four .die { width: 62px; height: 62px; font-size: 2.4rem; }
+.die.used { opacity: .3; filter: grayscale(1); }
+.die.rolling { animation: shake .5s linear; }
+@keyframes shake {
+  0% { transform: rotate(0) scale(1); } 25% { transform: rotate(-18deg) scale(1.12); }
+  50% { transform: rotate(14deg) scale(.95); } 75% { transform: rotate(-8deg) scale(1.08); } 100% { transform: rotate(0) scale(1); }
+}
+#btn-roll { width: 100%; font-size: 1.6rem; }
+
+.off-box { margin-bottom: 8px; padding: 6px; border-radius: 12px; border: 3px solid transparent; cursor: pointer; }
+.off-name { color: var(--cream); font-weight: 800; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; }
+.off-box .led { font-size: 1.2rem; }
+.tray {
+  display: grid; grid-template-columns: repeat(15, 1fr); gap: 2px; margin-top: 6px;
+  background: #05070A; border: 2px solid #000; border-radius: 8px; padding: 4px;
+}
+.tray .slot { aspect-ratio: 1; border-radius: 50%; background: #1B1F24; border: 1px solid #3A414A; }
+.tray .slot.cheese { background: url("assets/chatgpt-art/checker-cheese.png") center / cover; border: 1px solid var(--cheese); }
+.tray .slot.grape { background: url("assets/chatgpt-art/checker-grape.png") center / cover; border: 1px solid var(--grape-pale); }
+.off-box.dest-ready { border-color: var(--lime); background: rgba(184,227,86,.2); }
+.off-box.dest-ready::after { content: "👇 tap to bear off"; color: var(--lime-glow); font-weight: 800; font-size: .95rem; display: block; text-align: center; margin-top: 4px; }
+
+.btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-grid .fat-btn { font-size: 1.1rem; min-height: 60px; padding: .7rem .4rem; }
+#btn-pass { grid-column: 1 / -1; background: var(--lime); }
+
+/* ---------- overlays ---------- */
+.overlay {
+  position: fixed; inset: 0; z-index: 50; background: rgba(5, 7, 10, .8);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.sheet {
+  background: var(--cream); border: 6px solid var(--ink); border-radius: 26px;
+  padding: 28px; max-width: 660px; width: 100%; max-height: 92vh; overflow: auto; text-align: center;
+}
+.sheet h2 { font-size: 2rem; margin-top: 0; }
+.how-list { text-align: left; font-size: 1.25rem; line-height: 1.45; }
+.how-list li { margin-bottom: .6rem; }
+.win-sheet img {
+  width: min(60vw, 320px); aspect-ratio: 3/4; border-radius: 20px;
+  border: 6px solid var(--cheese-deep); background: var(--cheese-pale);
+}
+#win-sub { font-size: 1.35rem; font-weight: 700; }
+.win-sheet .menu-buttons { margin: 0 auto; }
+
+/* ---------- responsive: portrait / phone stacks ---------- */
+@media (max-width: 900px), (orientation: portrait) and (max-width: 1100px) {
+  .title-card { flex-direction: column; }
+  .title-photo-wrap #title-photo { width: min(70vw, 340px); }
+  #console-top { grid-template-columns: 1fr; }
+  .console-brand { display: none; }
+  #turn-banner { min-width: 0; }
+  .game-main { flex-direction: column; }
+  #players { flex: none; flex-direction: row; }
+  .player-card { flex: 1; }
+  .avatar, .player-card.grape .avatar { aspect-ratio: 4/3; }
+  #side { flex: none; }
+  #board { min-height: 52vh; }
+  :root { --ck: clamp(30px, 7vw, 42px); }
+  .btn-grid { grid-template-columns: 1fr 1fr 1fr; }
+  #btn-pass { grid-column: auto; }
+}

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="img" aria-label="Cheese Cathy: smiling woman in a giant Swiss-cheese costume beside a wooden Cheese Cathy sign at a tropical overlook">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BFE3F2"/><stop offset="1" stop-color="#E8F6EE"/>
+    </linearGradient>
+    <linearGradient id="falls" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EAFBFF"/><stop offset="1" stop-color="#9FD8EF"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#sky)"/>
+  <ellipse cx="70" cy="80" rx="60" ry="22" fill="#fff" opacity=".8"/>
+  <ellipse cx="280" cy="55" rx="80" ry="24" fill="#fff" opacity=".8"/>
+  <!-- jungle hills -->
+  <path d="M0 210 Q80 150 160 200 T400 180 V320 H0 Z" fill="#2F7D4F"/>
+  <path d="M0 250 Q120 200 220 245 T400 235 V340 H0 Z" fill="#256B43"/>
+  <!-- waterfall -->
+  <path d="M150 205 L185 205 L178 300 L157 300 Z" fill="url(#falls)"/>
+  <ellipse cx="167" cy="305" rx="30" ry="10" fill="#DFF5FD"/>
+  <!-- railing -->
+  <rect x="0" y="270" width="400" height="10" fill="#4A5560"/>
+  <rect x="0" y="310" width="400" height="8" fill="#4A5560"/>
+  <rect x="30" y="270" width="10" height="120" fill="#39424C"/>
+  <rect x="360" y="270" width="10" height="120" fill="#39424C"/>
+  <!-- ground -->
+  <rect x="0" y="330" width="400" height="170" fill="#6B5B4C"/>
+  <ellipse cx="200" cy="360" rx="200" ry="30" fill="#7C6A58"/>
+  <!-- wooden sign -->
+  <g>
+    <rect x="18" y="330" width="130" height="64" rx="8" fill="#7A5230" stroke="#4A2F18" stroke-width="5"/>
+    <text x="83" y="360" text-anchor="middle" font-family="Georgia,serif" font-size="24" font-weight="bold" fill="#FFD94D">Cheese</text>
+    <text x="83" y="384" text-anchor="middle" font-family="Georgia,serif" font-size="24" font-weight="bold" fill="#FFD94D">Cathy</text>
+    <path d="M28 348 c-4-7-14-3-10 4 l10 8 10-8 c4-7-6-11-10-4z" fill="#FFD94D"/>
+    <path d="M132 376 c-4-7-14-3-10 4 l10 8 10-8 c4-7-6-11-10-4z" fill="#FFD94D"/>
+    <rect x="30" y="394" width="12" height="60" fill="#4A2F18"/>
+    <rect x="124" y="394" width="12" height="60" fill="#4A2F18"/>
+  </g>
+  <!-- giant cheese wedge costume -->
+  <g>
+    <path d="M185 190 L300 190 L315 470 L170 470 Z" fill="#FFC93C" stroke="#B97F00" stroke-width="5"/>
+    <g fill="#E8A100">
+      <ellipse cx="225" cy="260" rx="14" ry="18"/>
+      <ellipse cx="265" cy="300" rx="18" ry="14"/>
+      <ellipse cx="235" cy="350" rx="12" ry="15"/>
+      <ellipse cx="275" cy="400" rx="16" ry="13"/>
+      <ellipse cx="215" cy="430" rx="13" ry="12"/>
+      <ellipse cx="260" cy="230" rx="10" ry="10"/>
+      <ellipse cx="292" cy="345" rx="9" ry="12"/>
+    </g>
+  </g>
+  <!-- Cathy upper body -->
+  <g>
+    <ellipse cx="242" cy="150" rx="34" ry="38" fill="#8A6F5C"/>
+    <ellipse cx="242" cy="152" rx="26" ry="30" fill="#F2C39B"/>
+    <path d="M216 118 Q242 96 268 118 Q272 150 266 168 Q266 140 242 132 Q218 140 218 168 Q212 150 216 118z" fill="#4A4A52"/>
+    <circle cx="232" cy="152" r="3" fill="#333"/>
+    <circle cx="252" cy="152" r="3" fill="#333"/>
+    <path d="M232 168 Q242 176 252 168" stroke="#8A4B3A" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- white tee -->
+    <path d="M200 190 Q242 178 284 190 L276 226 Q242 236 208 226 Z" fill="#F7F3E8" stroke="#D8D2C0" stroke-width="3"/>
+    <!-- purple sling bag -->
+    <rect x="252" y="196" width="44" height="60" rx="12" fill="#7B2FBE" stroke="#4E1A82" stroke-width="4"/>
+    <path d="M252 196 L232 182" stroke="#4E1A82" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="274" cy="226" r="5" fill="#D9B8F5"/>
+    <!-- arms -->
+    <path d="M202 196 Q188 240 196 268" stroke="#F2C39B" stroke-width="14" stroke-linecap="round"/>
+    <path d="M282 196 Q296 240 300 262" stroke="#F2C39B" stroke-width="14" stroke-linecap="round"/>
+    <rect x="186" y="262" width="20" height="12" rx="6" fill="#fff" stroke="#ccc" stroke-width="2"/>
+  </g>
+  <!-- lime water bottle -->
+  <rect x="306" y="250" width="20" height="52" rx="8" fill="#B8E356" stroke="#5F8F1B" stroke-width="4"/>
+  <rect x="309" y="240" width="14" height="12" rx="4" fill="#5F8F1B"/>
+</svg>

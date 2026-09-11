@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cathy's Backgammon 🧀</title>
+<meta name="description" content="Cathy's Backgammon — Cheese Cathy edition. A big, friendly backgammon game for iPad.">
+<meta name="theme-color" content="#1B1F24">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon.svg">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ TITLE SCREEN ============ -->
+<section id="screen-title" class="screen">
+  <div class="title-card">
+    <div class="title-photo-wrap">
+      <img id="title-photo" class="photo" src="assets/photos/02-cheese-cathy.png" onerror="this.onerror=null;this.src='assets/photos/02-cheese-cathy.svg'" alt="Cheese Cathy in her Swiss-cheese costume">
+      <div class="polaroids">
+        <img class="photo" src="assets/photos/01-mom-dog-hybrid.png" onerror="this.onerror=null;this.src='assets/photos/01-mom-dog-hybrid.svg'" alt="Cathy and the hound">
+        <img class="photo" src="assets/photos/03-bama-2026.png" onerror="this.onerror=null;this.src='assets/photos/03-bama-2026.svg'" alt="Bama 2026: I made it!">
+      </div>
+    </div>
+    <div class="title-text">
+      <div class="brand-eyebrow">🧀 The Cheese Cathy Edition 🧀</div>
+      <h1>Cathy&rsquo;s Backgammon</h1>
+      <p class="tagline">Big board. Fat checkers. Your face on every one of them.</p>
+      <div class="menu-buttons">
+        <button id="btn-vs-ai" class="fat-btn primary">🎲 Play Robo-Jason<br><span class="sub">he talks back, he loses gracefully</span></button>
+        <button id="btn-hotseat" class="fat-btn secondary">👥 Cathy vs Jason<br><span class="sub">pass &amp; play, in person</span></button>
+        <button id="btn-how" class="fat-btn ghost">❓ How to Play</button>
+      </div>
+      <p class="hint-line">Tap a glowing checker, then tap where it should go. That&rsquo;s it, Mom.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GAME SCREEN ============ -->
+<section id="screen-game" class="screen hidden">
+  <header id="console-top">
+    <div class="console-brand">CATHY&rsquo;S BACKGAMMON <span>· CHEESE CATHY EDITION</span></div>
+    <div id="turn-banner" role="status">Cathy&rsquo;s turn</div>
+    <div class="console-brand right">PROGRAM <span>BAMA 2026</span></div>
+  </header>
+
+  <div class="game-main">
+    <!-- LEFT CONSOLE: players -->
+    <aside id="players">
+      <div class="player-card cheese" id="card-0">
+        <div class="avatar-wrap">
+          <img id="avatar-0" class="avatar" src="assets/chatgpt-art/avatar-cathy-cheese.png" onerror="this.onerror=null;this.src='assets/photos/derived/02-cheese-cathy-face.jpg'" alt="Cathy">
+          <div class="name-plate">🧀 CATHY</div>
+        </div>
+        <div class="led-row"><span class="led-label">PIPS</span><span id="pips-0" class="led">167</span></div>
+        <div class="bubble" id="bubble-0">Let&rsquo;s go, Mom. Tap ROLL.</div>
+      </div>
+      <div class="player-card grape" id="card-1">
+        <div class="avatar-wrap">
+          <img id="avatar-1" class="avatar" src="assets/jason.svg" alt="Jason">
+          <div class="name-plate" id="name-plate-1">🤖 ROBO-JASON</div>
+        </div>
+        <div class="led-row"><span class="led-label">PIPS</span><span id="pips-1" class="led">167</span></div>
+        <div class="bubble" id="bubble-1">I&rsquo;ll be gentle. Probably.</div>
+      </div>
+    </aside>
+
+    <!-- BOARD -->
+    <div id="board-wrap">
+      <div id="board" aria-label="Backgammon board"></div>
+      <div id="board-msg" role="status"></div>
+    </div>
+
+    <!-- RIGHT CONSOLE: dice + controls -->
+    <aside id="side">
+      <div class="panel" id="dice-panel">
+        <div class="panel-label">DICE</div>
+        <div id="dice-row">
+          <div class="die">?</div><div class="die">?</div>
+        </div>
+        <button id="btn-roll" class="fat-btn primary">🎲 ROLL</button>
+      </div>
+      <div class="panel" id="off-panel">
+        <div class="panel-label">HOME TRAY 🏁</div>
+        <div class="off-box cheese" id="off-box-0"><span class="off-name">Cathy <b id="off-count-0" class="led">0</b></span><div class="tray" id="tray-0"></div></div>
+        <div class="off-box grape" id="off-box-1"><span class="off-name"><span id="off-name-1">Jason</span> <b id="off-count-1" class="led">0</b></span><div class="tray" id="tray-1"></div></div>
+      </div>
+      <div class="panel btn-grid">
+        <button id="btn-undo" class="fat-btn">↩️ Undo</button>
+        <button id="btn-hint" class="fat-btn">💡 Ask Cathy</button>
+        <button id="btn-pass" class="fat-btn hidden">⏭ Done</button>
+        <button id="btn-new" class="fat-btn">🔄 New</button>
+        <button id="btn-menu" class="fat-btn">🏠 Menu</button>
+        <button id="btn-sound" class="fat-btn" aria-label="Toggle sound">🔊</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ HELP OVERLAY ============ -->
+<div id="overlay-help" class="overlay hidden" role="dialog" aria-label="How to play">
+  <div class="sheet">
+    <h2>How to Play 🧀</h2>
+    <ol class="how-list">
+      <li>🎲 Tap <b>ROLL</b>. Your checkers are <b>cheese with your face</b>. Jason&rsquo;s are grapes.</li>
+      <li>✨ Tap a <b>glowing</b> checker, then tap a glowing landing spot.</li>
+      <li>🟣 Land alone on a lone grape to <b>hit it to the bar</b>. Feels great.</li>
+      <li>🚧 Anything on the middle <b>BAR</b> must come back in first.</li>
+      <li>🏁 Get all 15 into your home (points 1–6), then tap the <b>HOME TRAY</b> to bear off. First one out wins.</li>
+      <li>🎲🎲 Doubles = <b>4 moves</b>. Cheese Cathy privilege.</li>
+      <li>💡 <b>Ask Cathy</b> if stuck. She&rsquo;ll tell you what she&rsquo;d do.</li>
+    </ol>
+    <button id="btn-close-help" class="fat-btn primary">Got it! ▶</button>
+  </div>
+</div>
+
+<!-- ============ WIN OVERLAY ============ -->
+<div id="overlay-win" class="overlay hidden" role="dialog" aria-label="Winner">
+  <div class="sheet win-sheet">
+    <img id="win-photo" class="photo" src="assets/photos/03-bama-2026.png" onerror="this.onerror=null;this.src='assets/photos/03-bama-2026.svg'" alt="Celebration photo">
+    <h2 id="win-title">🧀 Cathy wins!</h2>
+    <p id="win-sub">Bama 2026: It was worth it. 🏆</p>
+    <div class="menu-buttons">
+      <button id="btn-again" class="fat-btn primary">🔄 Play Again</button>
+      <button id="btn-win-menu" class="fat-btn ghost">🏠 Menu</button>
+    </div>
+  </div>
+</div>
+
+<div id="smoke-result" class="hidden"></div>
+
+<script src="engine.js"></script>
+<script src="ai.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
