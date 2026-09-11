@@ -426,7 +426,7 @@ img { -webkit-touch-callout: none; -webkit-user-drag: none; user-select: none; }
    are as big as the rail allows without overflowing */
 .tray {
   display: grid; grid-template-columns: repeat(var(--cols, 5), var(--slot)); grid-auto-rows: var(--slot); gap: 3px;
-  justify-content: center; align-content: center; min-height: 0;
+  justify-content: center; align-content: center; min-height: 0; min-width: 0; overflow: hidden;
   background: #05070A; border: 2px solid #000; border-radius: 8px; padding: 4px;
 }
 .tray .slot { border-radius: 50%; background: #1B1F24; border: 1px solid #3A414A; }
@@ -509,6 +509,7 @@ img { -webkit-touch-callout: none; -webkit-user-drag: none; user-select: none; }
   }
   .avatar-wrap { grid-area: avatar; align-self: center; }
   .avatar { width: 100%; }
+  .name-plate { font-size: .68rem; letter-spacing: 0; padding: 2px 4px; }
   .led-row { grid-area: pips; }
   .bubble { grid-area: bubble; font-size: .95rem; padding: 6px 8px; }
   .bubble::before, .bubble::after { display: none; }
