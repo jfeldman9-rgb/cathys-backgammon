@@ -216,9 +216,19 @@
     b.classList.remove('fresh');
     void b.offsetWidth;
     b.classList.add('fresh');
+    fitBubble(b);
     if (alsoBoard !== false) msg(text);
     S.lastIdle = Date.now();
   }
+  // The rail is narrow on a 1024-wide iPad; step the font down rather than overflow the card.
+  function fitBubble(b) {
+    b.classList.remove('tight', 'tighter');
+    if (b.scrollHeight <= b.clientHeight + 1) return;
+    b.classList.add('tight');
+    if (b.scrollHeight <= b.clientHeight + 1) return;
+    b.classList.replace('tight', 'tighter');
+  }
+  function fitBubbles() { fitBubble($('bubble-0')); fitBubble($('bubble-1')); }
   function msg(t) { $('board-msg').textContent = t || ''; }
 
   // ---------- avatar swaps (photos DURING play) ----------
@@ -282,6 +292,59 @@
       for (var i = 0; i < 15; i++) { var s = document.createElement('div'); s.className = 'slot'; t.appendChild(s); }
     });
   }
+
+  // ---------- console fit: checkers fill their points, five always stack in a half-board ----------
+  // --ck drives checker diameter AND the bar column width, so measure -> set -> re-measure once.
+  var fitRaf = 0;
+  function fitBoardNow() {
+    var p = pointEls[12], board = $('board');
+    if (!p || $('screen-game').classList.contains('hidden')) return;
+    var pw = p.offsetWidth, ph = p.offsetHeight;   // border box: checkers may kiss the 3px highlight ring
+    if (!pw || !ph) return;
+    var byW = pw - 4;
+    var byH = (ph - 40) / 4.6;        // 5 checkers @ 16% overlap + point number + ×N badge
+    var ck = Math.max(24, Math.min(byW, byH, 88));
+    board.style.setProperty('--ck', Math.round(ck) + 'px');
+  }
+  // Home tray: 5×3 discs sized to whatever height the rail has left between dice and keypad.
+  function fitTrayNow() {
+    var tray = $('tray-0');
+    if (!tray || $('screen-game').classList.contains('hidden')) return;
+    var w = tray.clientWidth - 8, h = tray.clientHeight - 8;    // minus 4px padding each side
+    if (w <= 0 || h <= 0) return;
+    // pick the column count (5×3, 8×2 or 15×1) that gives the biggest discs for this rail
+    var best = { cols: 5, slot: 0 };
+    [5, 8, 15].forEach(function (cols) {
+      var rows = Math.ceil(15 / cols);
+      var s = Math.floor(Math.min((w - 3 * (cols - 1)) / cols, (h - 3 * (rows - 1)) / rows));
+      if (s > best.slot) best = { cols: cols, slot: s };
+    });
+    var side = $('side');
+    side.style.setProperty('--slot', Math.max(8, Math.min(best.slot, 60)) + 'px');
+    side.style.setProperty('--cols', best.cols);
+  }
+  function fitBoard() {
+    if (fitRaf) return;
+    fitRaf = requestAnimationFrame(function () {
+      fitRaf = 0;
+      fitBoardNow(); fitTrayNow();
+      requestAnimationFrame(function () { fitBoardNow(); fitTrayNow(); fitBubbles(); });
+    });
+  }
+  window.addEventListener('resize', fitBoard);
+  window.addEventListener('orientationchange', fitBoard);
+  if (window.ResizeObserver) {
+    new ResizeObserver(fitBoard).observe($('board-wrap'));
+  }
+
+  // ---------- keep the console still: no pinch zoom, no rubber-band scroll while playing ----------
+  document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+  // (double-tap zoom is handled by touch-action: manipulation / none in styles.css)
+  document.addEventListener('touchmove', function (e) {
+    if (e.target.closest && e.target.closest('.sheet, #screen-title')) return;   // help / win sheets may scroll
+    if (getComputedStyle($('screen-game')).position !== 'fixed') return;         // phone-portrait layout scrolls
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
 
   function checkerEl(color) {
     var d = document.createElement('div');
@@ -382,7 +445,9 @@
     st.dice.forEach(function (v) {
       var d = document.createElement('div');
       d.className = 'die';
-      d.textContent = FACES[v - 1];
+      d.dataset.v = v;                       // pips are drawn by CSS so they scale with the die
+      d.textContent = FACES[v - 1];          // glyph stays for a11y / no-CSS fallback
+      d.setAttribute('aria-label', 'die showing ' + v);
       var ix = rem.indexOf(v);
       if (ix === -1) d.classList.add('used');
       else rem.splice(ix, 1);
@@ -676,6 +741,7 @@
   function show(screen) {
     $('screen-title').classList.toggle('hidden', screen !== 'title');
     $('screen-game').classList.toggle('hidden', screen !== 'game');
+    if (screen === 'game') { fitBoardNow(); fitTrayNow(); fitBoard(); }
   }
   function start(mode) { show('game'); newGame(mode); }
 
@@ -693,7 +759,7 @@
   $('btn-win-menu').addEventListener('click', function () { $('overlay-win').classList.add('hidden'); show('title'); });
   $('btn-sound').addEventListener('click', function () {
     soundOn = !soundOn;
-    $('btn-sound').textContent = soundOn ? '🔊' : '🔇';
+    $('btn-sound').textContent = soundOn ? '🔊 Sound on' : '🔇 Sound off';
   });
   [0, 1].forEach(function (ix) {
     offBox(ix).addEventListener('click', function () {

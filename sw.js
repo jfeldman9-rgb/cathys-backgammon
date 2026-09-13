@@ -1,5 +1,5 @@
 /* Cathy's Backgammon — offline cache (GitHub Pages friendly). */
-const CACHE = 'cathy-backgammon-v2';
+const CACHE = 'cathy-backgammon-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -9,6 +9,10 @@ const ASSETS = [
   './app.js',
   './manifest.webmanifest',
   './assets/icon.svg',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './assets/icon-512-maskable.png',
+  './assets/apple-touch-icon.png',
   './assets/jason.svg',
   './assets/chatgpt-art/avatar-cathy-cheese.png',
   './assets/chatgpt-art/avatar-cathy-momdog.png',
