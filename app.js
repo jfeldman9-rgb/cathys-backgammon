@@ -21,31 +21,16 @@
   probe('assets/chatgpt-art/board-table.png', function () { $('board-wrap').classList.add('has-table'); });
   probe('assets/chatgpt-art/avatar-jason.png', function () { ART.jason = 'assets/chatgpt-art/avatar-jason.png'; $('avatar-1').src = ART.jason; });
 
-  // ---------- tiny sound kit ----------
-  var soundOn = true, actx = null;
-  function beep(freq, dur, when) {
-    if (!soundOn) return;
-    try {
-      if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-      var o = actx.createOscillator(), g = actx.createGain();
-      o.type = 'sine'; o.frequency.value = freq;
-      var t = actx.currentTime + (when || 0);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(g); g.connect(actx.destination);
-      o.start(t); o.stop(t + dur + 0.05);
-    } catch (e) { /* silent */ }
-  }
-  var sfx = {
-    move: function () { beep(520, 0.09); },
-    hit: function () { beep(180, 0.18); beep(320, 0.12, 0.08); },
-    roll: function () { beep(300, 0.06); beep(420, 0.06, 0.07); beep(540, 0.08, 0.14); },
-    select: function () { beep(660, 0.05); },
-    win: function () { [523, 659, 784, 1047].forEach(function (f, i) { beep(f, 0.22, i * 0.16); }); },
-    bad: function () { beep(140, 0.15); },
-    off: function () { beep(784, 0.1); beep(1047, 0.14, 0.1); },
-  };
+  // ---------- sound (sfx.js: synthesized arcade kit; every call is a no-op while muted) ----------
+  var soundOn = true;
+  var sfx = window.CathySfx || (function () {
+    var noop = function () {}, stub = {};
+    ['roll', 'doubles', 'dance', 'pickup', 'place', 'stack', 'enter', 'hit', 'off', 'cheese', 'win', 'lose', 'tap', 'bad', 'setMuted', 'unlock']
+      .forEach(function (k) { stub[k] = noop; });
+    return stub;
+  })();
+  // iOS suspends the AudioContext when the app is backgrounded; any tap brings it back.
+  document.addEventListener('pointerdown', function () { if (soundOn) sfx.unlock(); }, { passive: true });
 
   // ---------- state ----------
   var S = {
@@ -66,7 +51,16 @@
   function me() { return S.st.turn; }
   function isAIturn() { return S.mode === 'ai' && me() === 1 && !S.over; }
   function isHumanTurn() { return !S.over && !S.busy && (S.mode === 'hotseat' || me() === 0); }
-  function pick(arr) { return arr[Math.floor(S.rand() * arr.length)]; }
+  // Random line, but never the same line twice in a row from the same list.
+  var lastPick = typeof WeakMap === 'function' ? new WeakMap() : null;
+  function pick(arr) {
+    if (arr.length < 2) return arr[0];
+    var prev = lastPick ? lastPick.get(arr) : -1;
+    var i = Math.floor(S.rand() * arr.length);
+    if (i === prev) i = (i + 1 + Math.floor(S.rand() * (arr.length - 1))) % arr.length;
+    if (lastPick) lastPick.set(arr, i);
+    return arr[i];
+  }
   function fmt(s, vars) {
     return s.replace(/\{(\w+)\}/g, function (_, k) { return vars && k in vars ? vars[k] : ''; });
   }
@@ -84,12 +78,28 @@
       'Ooh, {a} and {b}. I\'d look at the glowing ones. 👀',
       '{a} and {b}. You hiked to a waterfall — you can handle this.',
       '{a}-{b}. Purple bag on, game face on.',
+      '{a} and {b}. PROGRAM: BAMA 2026. Resistance level: Jason. Pedal. 🚴',
+      '{a}-{b}. The console says LEVEL UP. The console is never wrong.',
+      'A {a} and a {b}. Sharp cheddar move or mild? Your call, Mom.',
+      '{a}-{b}. Even the hound could play this one. No offense, hound. 🐾',
+      '{a} and {b}. That\'s a "grab the purple bag, we\'re going places" roll.',
+      '{a}-{b}. Jason just said "uh oh" under his breath. I heard it.',
+      '{a} and {b}. Somewhere in Alabama a crowd goes wild.',
+      'Rolled {a}-{b}. The dice respect the cheese.',
+      '{a} and {b}. Move like you\'re late for the waterfall.',
+      '{a}-{b}. Gouda roll. Get it? …Moving on.',
     ],
     cathyDoubles: [
       'DOUBLE {a}s! Four moves! The cheese stands TALL. 🧀🧀🧀🧀',
       'Double {a}s! That\'s a Cheese Cathy roll if I ever saw one.',
       'Double {a}s! Jason\'s going to say you\'re lucky. You are. Use it.',
       'Double {a}s — FOUR moves. Somebody light the tiki torches.',
+      'DOUBLE {a}s! The console just flashed PROGRAM: BAMA 2026. 🏁',
+      'Double {a}s! The hound is doing zoomies. Four moves, Mom! 🐾',
+      'Double {a}s! Jason: "That\'s rigged." Cathy: "That\'s CHEESE." 🧀',
+      'Double {a}s. Four moves. The purple bag just unzipped itself. 👜',
+      'DOUBLE {a}s! Pop the lime water. Four moves, no waiting.',
+      'Double {a}s! Mom, I have never been prouder, and I\'ve been you the whole time.',
     ],
     cathyHit: [
       'RELEASE THE HOUND! 🐾 Jason\'s on the bar.',
@@ -97,30 +107,60 @@
       'Bonk. That\'s a grape on the bar. Sorry, Jason. (Not sorry.)',
       'Sent him packing. He can have snacks on the bar.',
       'Oh, that\'s a HIT. Somebody raised you right — oh wait, that\'s you.',
+      'WHAM. Jason, go sit on the bar and think about what you did.',
+      'HIT! The hound got a grape! Not a real grape, Jason, put the phone down. 🐾',
+      'Bar time for Jason. He can hold the purple bag while he waits. 👜',
+      'BOOM. That\'s the sound of Cheese Cathy landing on a grape. 🧀💥',
+      'You hit him! Jason\'s doing the face he did when he lost at Uno in \'09.',
+      'PROGRAM: BAMA 2026 — HIT REGISTERED. The bike console approves. 🚴',
+      'Grape, meet bar. Bar, meet grape. You two have a lot to talk about.',
+      'Hit! And she says "oops" like she didn\'t mean it. She meant it.',
+      'That grape got sent to the bar like a kid sent to his room. 🐾',
     ],
     cathyGotHit: [
       'Ouch. He got you. Remember who taught him to count.',
       'On the bar. Deep breath, sip the lime water, come back in.',
       'He hit you. Rude. Jason, we TALKED about this.',
       'Bar time. Think of it as a scenic overlook. 🌴',
+      'Hit. Fine. The cheese has been to the bar before. The cheese comes BACK.',
+      'He hit his own mother. On Mother\'s Day. (It\'s not Mother\'s Day. Still.)',
+      'On the bar. Grab the purple bag, we\'re only here a minute. 👜',
+      'Jason hit you and said "sorry Mom" in the voice he uses for parking tickets.',
+      'Bar. Whatever. You climbed to a WATERFALL. This is a speed bump.',
+      'Okay, he got one. The hound remembers. The hound always remembers. 🐾',
     ],
     cathyEnter: [
       'Back in! The cheese cannot be contained.',
       'And she\'s BACK. Like she never left.',
       'Re-entered. The waterfall didn\'t stop you, neither does this.',
+      'She\'s in! Cathy re-enters the room and everyone claps.',
+      'Back on the board. Purple bag, sunglasses, no comment. 👜',
+      'Cheese, re-entered. Somebody tell Jason the party\'s not over.',
+      'And the hound is OFF the leash again. Welcome back, Mom. 🐾',
+      'Re-entry! Bama 2026: STILL made it. 🏁',
     ],
     cathyDance: [
       'No moves this roll. Blocked solid. Not your fault — blame the dice.',
       'Nothing plays. Sit this one out like a champ. Tap Done.',
       'Stuck this turn. Even Cheese Cathy waits sometimes. Tap Done.',
+      'No legal moves. Consider this a snack break. Tap Done. 🧀',
+      'Blocked! Jason built a wall. Very un-Jason of him to finish something.',
+      'Nothing plays. Fine. Stretch, sip, tap Done. Program resumes shortly.',
+      'Zero moves. The hound is sitting. Good hound. Tap Done. 🐾',
+      'Dance turn. Shimmy a little, then tap Done. Nobody\'s looking. (Jason is.)',
     ],
     cathyAllHome: [
       'Everybody\'s HOME! Bama 2026 vibes. Now bear \'em off. 🏁',
       'All 15 in the home stretch. I MADE IT energy. 🏁',
+      'All home! The purple bag is by the door. Start bearing off. 👜',
+      'FIFTEEN cheeses home. The console reads: COOLDOWN. Bear \'em off! 🚴',
+      'Everyone\'s home! Even the hound. Now get them OFF the board. 🐾',
     ],
     cathyOffFirst: [
       '"I MADE IT!" — first checker off! 🏁',
       'FIRST ONE OFF! Frame it next to the Bama photo. 🏁',
+      'First one off the board! Somebody hold up the "I MADE IT" sign. 🏁',
+      'One off! That\'s the first slice. There are fourteen more slices, Cathy. 🧀',
     ],
     cathyOff: [
       'Another one off. {n} down, {left} to go.',
@@ -128,6 +168,12 @@
       'Off! {left} to go. Jason is sweating.',
       '{n} of 15. The purple bag is basically packed.',
       'Ka-ching. {left} more and we\'re calling Bama.',
+      '{n} off! The tray\'s filling up like a cheese board at a party. 🧀',
+      '{left} to go. Jason just said "it\'s not over." It is a little over, Jason.',
+      '{n} down. The hound is counting too. She\'s got {left}. 🐾',
+      'Off! {n} in the tray. PROGRAM: BAMA 2026 — {left} intervals left. 🚴',
+      '{n} off. Cheese Cathy doesn\'t rush. Cheese Cathy AGES gracefully. 🧀',
+      '{left} left! Warm up the "I MADE IT" voice. 🏁',
     ],
     cathyMove: [
       'Nice.',
@@ -138,20 +184,43 @@
       'Love that for you.',
       'Made a point! Jason can\'t land there.',
       'Chef\'s kiss. 🧀',
+      'Smooth. Like brie.',
+      'Textbook. The textbook is called "Cathy."',
+      'Jason blinked. Good sign.',
+      'That\'s a purple-bag move. Classy, mobile, hard to argue with. 👜',
+      'Sharp. Like a cheddar. 🧀',
+      'The hound approves. 🐾',
+      'Look at you. Bama 2026 didn\'t happen by accident.',
+      'Steady. Waterfall pace.',
     ],
-    cathyMoreFromBar: ['More from the BAR first, Mom. 👆', 'Still one on the bar — bring her home. 👆'],
+    cathyMoreFromBar: [
+      'More from the BAR first, Mom. 👆',
+      'Still one on the bar — bring her home. 👆',
+      'One more cheese on the bar. Nobody leaves the bar behind. 👆🧀',
+    ],
     cathyIdle: [
       'Take your time. The cheese isn\'t going anywhere.',
       'The glowing ones are your options. No wrong answers, just louder ones.',
       'Need a nudge? Tap "Ask Cathy". She\'s you. She knows.',
       'Psst — Jason gets nervous when you take your time.',
       'Waterfall energy. Slow, steady, unstoppable.',
+      'No rush. Cheese gets better with age. So do you. 🧀',
+      'Jason\'s pretending he isn\'t peeking. He\'s peeking.',
+      'The console is holding. PROGRAM: BAMA 2026 waits for no one — except you. 🚴',
+      'Tap a glowing checker, Mom. Then tap where it goes. Like pointing at cheese in a case.',
+      'The hound has laid down. Take that as permission to think. 🐾',
+      'Where\'s the purple bag? Just checking. Okay, your move. 👜',
     ],
     cathyTurnStart: [
       'Your turn, Mom. Tap ROLL. 🎲',
       'Cathy\'s up! Give those dice a tap.',
       'Back to you. Cheese time. 🎲',
       'You\'re up. Roll it like you mean it.',
+      'Your turn. Roll like you\'re shaking out a beach towel. 🎲',
+      'Cathy\'s turn. The console flashes: GO. 🚴🎲',
+      'Dice are yours, Mom. The hound believes in you. 🐾',
+      'Your roll. Jason says "no pressure." That means pressure. 🎲',
+      'Up you go. Grab the purple bag, tap ROLL. 👜🎲',
     ],
     hint: [
       'Honey, I\'d move {from} to {to}. Mother knows.',
@@ -159,7 +228,25 @@
       'Sweetie: {from} to {to}. Then we get a snack.',
       '{from} to {to}. Trust me, I\'ve been you for 70 years.',
       'Try {from} to {to}. It\'s what I\'d do at the waterfall.',
+      '{from} to {to}, Mom. I\'d bet the purple bag on it. 👜',
+      'Okay, cheese to cheese: {from} to {to}. {why}',
+      '{from} to {to}. The hound sniffed it out. Trust the hound. 🐾',
+      'Move {from} to {to}. Like picking the good cheddar off the top shelf. 🧀',
+      'PROGRAM: BAMA 2026 recommends {from} to {to}. Resistance: light. 🚴',
+      '{from} to {to}. Jason would never see it coming. He\'s looking at his phone.',
+      'I asked myself. I said {from} to {to}. I agree with me.',
+      '{from} to {to}. {why} And then maybe a snack.',
+      'Mother\'s intuition says {from} to {to}. Mother\'s intuition also found your keys in 1998.',
+      'Put on your glasses, Mom: {from} to {to}. {why}',
     ],
+    hintWhy: {
+      hit: 'It HITS Jason. Release the hound. 🐾',
+      off: 'It bears one OFF. I MADE IT energy. 🏁',
+      bar: 'It gets you off the bar, which is where Jason wants you.',
+      point: 'It makes a point — two cheeses, Jason can\'t land there.',
+      safe: 'Nice and safe. Cheese in numbers.',
+      race: 'It moves the race along. Waterfall pace.',
+    },
     jasonTurn: [
       'Jason: "My turn. Don\'t watch too closely, Mom."',
       'Jason: "Okay okay okay. I\'ve got a plan. Probably."',
@@ -167,45 +254,134 @@
       'Jason: "Watch and learn." (Cathy, do not learn from this.)',
       'Jason rolls like he does dishes: reluctantly.',
       'Jason: "I\'m going easy on you." He is not.',
+      'Jason: "Hang on, let me think." We wait. We wait some more.',
+      'Jason\'s turn. He cracked his knuckles. That never helps.',
+      'Jason: "I read a strategy article." He read the headline.',
+      'Jason\'s up. He\'s squinting like it\'s a menu with no pictures.',
+      'Jason: "Mom, is the hound allowed on the board?" No, Jason. Roll.',
     ],
     jasonRoll: [
       'Jason rolled {a}-{b}. He\'s squinting at it.',
       '{a} and {b} for Jason. He says "hmm" a lot.',
       'Jason: "{a} and {b}? Fine. FINE."',
       'Jason\'s {a}-{b}. He\'s pretending he meant that.',
+      'Jason rolled {a}-{b} and said "interesting." It is not interesting.',
+      '{a}-{b} for Jason. He asked if he could re-roll. He cannot.',
+      'Jason: "{a} and {b}. Okay. I see it." He does not see it.',
+      'Jason rolled {a}-{b} and looked at Mom for approval. Cute.',
     ],
     jasonDoubles: [
       'Jason rolled double {a}s. He\'s doing a little dance. Do not encourage him.',
       'Double {a}s for Jason. "SEE? SEE?" We see, Jason.',
+      'Double {a}s for Jason. He says he "manifested" it. Sure.',
+      'Jason: DOUBLE {a}s. He wants it noted for the record. Noted, Jason.',
+      'Jason rolled double {a}s and is now insufferable. Temporarily.',
     ],
     jasonHit: [
       'Jason: "Sorry, Mom." He hit you. He is not sorry.',
       'Jason hit you and immediately looked guilty. Good.',
       'Jason: "It\'s just the game!" It\'s never just the game.',
+      'Jason hit you and then asked if you needed anything. Deflection.',
+      'Jason: "Nothing personal, Mom." Everything is personal, Jason.',
+      'Jason hit a cheese. The hound has noted this in the ledger. 🐾',
+      'Jason hit you. He\'s already apologizing in advance for Thanksgiving.',
     ],
     jasonGotHit: [
       'Jason: "MOM." He\'s on the bar. 🐾',
       'Jason: "Okay that was uncalled for." It was called for.',
       'Jason\'s on the bar. He\'s texting someone about it.',
+      'Jason: "I was GOING to move that." Sure you were, sweetie.',
+      'Jason\'s on the bar, rubbing his head like the grape actually hurt.',
+      'Jason: "Is this because I didn\'t call Sunday?" Yes. Also it\'s the game.',
+      'Jason\'s on the bar. He says the hound "looked at him funny." 🐾',
+      'Jason: "Robo-Jason wouldn\'t have let that happen." Robo-Jason just did.',
     ],
     jasonDance: [
       'Jason can\'t move. He says the dice are "biased toward cheese."',
       'Jason\'s blocked! He\'s muttering. Let him.',
+      'Jason has no moves. He\'s blaming the lighting.',
+      'Jason\'s stuck. He is asking the hound for advice. The hound declines. 🐾',
+      'No moves for Jason. He calls this "resting." Sure.',
     ],
     jasonOff: [
       'Jason bore one off. "{n} down!" Great, Jason. Great.',
       'Jason: "{left} to go, Mom." Not if Cheese Cathy has anything to say.',
+      'Jason took one off. He counted it twice. Still {n}.',
+      'Jason: "{n} off!" He said it like a touchdown. It was a checker.',
+      'Jason\'s bearing off. {left} left. He\'s narrating it. Nobody asked.',
     ],
     jasonMove: [
       'Jason moved. Standard Jason.',
       'Jason: "Calculated." Uh huh.',
       'Jason made a move. He looks pleased. Suspicious.',
       'Jason: "Boom." It was not boom.',
+      'Jason moved and then explained why. At length.',
+      'Jason: "Chess move." Jason, this is backgammon.',
+      'Jason slid one over like he was returning a shopping cart.',
+      'Jason moved. He wants credit for it. Here: credit.',
+      'Jason: "Trust the process." The process is vibes.',
     ],
-    jasonAllHome: ['Jason\'s all home. He\'s hurrying. Hurry is how he loses.'],
+    jasonAllHome: [
+      'Jason\'s all home. He\'s hurrying. Hurry is how he loses.',
+      'Jason got all 15 home and announced it to the room. The room is you.',
+    ],
+    jasonEnter: [
+      'Jason\'s back in. Shrugging like it was the plan.',
+      'Jason re-entered. He says he "needed a minute." On the bar.',
+      'Jason\'s back on the board, looking around for the hound. 🐾',
+    ],
+    jasonBarRoll: [
+      'Jason rolled {a}-{b}. He has to come in from the bar first.',
+      'Jason\'s {a}-{b}. Bar first, buddy. Rules are rules.',
+      '{a}-{b} for Jason. He\'d like to skip the bar. He may not.',
+    ],
+    cathyBarRoll: [
+      'Rolled {a}-{b}. Bring one in from the BAR first, Mom. 👆',
+      '{a}-{b}. First things first: the bar. Tap it. 👆',
+      '{a} and {b}. Cheese on the bar comes home first. Tap the BAR. 👆🧀',
+      '{a}-{b}. Bar first, then mischief. 👆',
+    ],
     hotseatPass: [
       'Pass the iPad to {name}! No peeking, Cathy. 👀',
       '{name}\'s turn — hand it over. Gently.',
+      'Hand it to {name}. Wipe the cheese off first. 🧀',
+      '{name}\'s up. Pass it like a hot dish at Thanksgiving.',
+    ],
+    undo: [
+      'Undone. Mulligans are a mom right. ↩️',
+      'Take-backsies granted. ↩️',
+      'Rewound. Nobody saw that. (Jason saw that.) ↩️',
+      'Undo! The hound pretends it never happened. 🐾↩️',
+      'Undone. Cheese Cathy edits her own history. ↩️',
+    ],
+    newGame: [
+      'New game! You go first, Mom. Always. 🎲',
+      'Fresh board, fresh cheese. Tap ROLL, Cathy. 🎲',
+      'Board reset. PROGRAM: BAMA 2026 — begin warm-up. Tap ROLL. 🚴🎲',
+      'New game! Purple bag on the hook, dice in hand. 👜🎲',
+      'Clean slate. The hound has been let out. Tap ROLL. 🐾🎲',
+    ],
+    roboHello: [
+      'Robo-Jason online. I\'ll be gentle. Probably.',
+      'Beep boop. I was programmed by your son. Lower your expectations.',
+      'Robo-Jason booting… loading "sorry Mom" module… ready.',
+      'Robo-Jason here. I have read the rules. Once. Skimmed.',
+    ],
+    jasonHello: [
+      'Jason: "Ready when you are, Mom."',
+      'Jason: "Loser does the dishes."',
+      'Jason: "Best of one. No wait — best of three."',
+      'Jason: "I\'m warmed up. I stretched." He did not stretch.',
+    ],
+    rollFirst: [
+      'Tap ROLL first, Mom! 🎲',
+      'Dice first, cheese second. Tap ROLL. 🎲',
+      'Roll first! Even the hound knows that. 🐾🎲',
+    ],
+    cantOff: [
+      'That one can\'t bear off yet — all 15 have to be home first. 🏁',
+      'Not yet! Everyone has to be home before the tray opens. 🏁',
+      'The tray\'s locked until all 15 are home. House rules. Also actual rules. 🏁',
     ],
   };
 
@@ -493,9 +669,8 @@
     faceMood(null);
     setAvatar(ART.cathy);
     $('overlay-win').classList.add('hidden');
-    say(0, pick(['New game! You go first, Mom. Always. 🎲', 'Fresh board, fresh cheese. Tap ROLL, Cathy. 🎲']));
-    say(1, mode === 'ai' ? pick(['Robo-Jason online. I\'ll be gentle. Probably.', 'Beep boop. I was programmed by your son. Lower your expectations.'])
-      : pick(['Jason: "Ready when you are, Mom."', 'Jason: "Loser does the dishes."']), false);
+    say(0, pick(V.newGame));
+    say(1, pick(mode === 'ai' ? V.roboHello : V.jasonHello), false);
     render();
   }
 
@@ -527,16 +702,28 @@
       var isC = p === 0;
       if (!S.options.length) {
         say(p, pick(isC ? V.cathyDance : V.jasonDance));
-        sfx.bad();
+        sfx.dance();
       } else if (S.st.dice.length === 4) {
         say(p, fmt(pick(isC ? V.cathyDoubles : V.jasonDoubles), vars));
+        sfx.doubles();
       } else if (S.st.bar[p] > 0) {
-        say(p, isC ? 'Rolled ' + a + '-' + b + '. Bring one in from the BAR first, Mom. 👆' : 'Jason rolled ' + a + '-' + b + '. He has to come in from the bar first.');
+        say(p, fmt(pick(isC ? V.cathyBarRoll : V.jasonBarRoll), vars));
       } else {
         say(p, fmt(pick(isC ? V.cathyRoll : V.jasonRoll), vars));
       }
       render();
     }, 450);
+  }
+
+  // Why the hint is a good idea — so "Ask Cathy" teaches a little between the jokes.
+  function hintWhy(m) {
+    var st = S.st, p = me();
+    if (m.to === 'off') return V.hintWhy.off;
+    if (st.points[m.to].c === (1 - p) && st.points[m.to].n === 1) return V.hintWhy.hit;
+    if (m.from === 'bar') return V.hintWhy.bar;
+    if (st.points[m.to].c === p && st.points[m.to].n === 1) return V.hintWhy.point;
+    if (st.points[m.to].c === p) return V.hintWhy.safe;
+    return V.hintWhy.race;
   }
 
   function pipDist(from, to, player) {
@@ -561,16 +748,17 @@
     var st = S.st, isC = player === 0;
     var hit = m.to !== 'off' && st.points[m.to].c === (1 - player) && st.points[m.to].n === 1;
     var wasHome = BG.allInHome(st, player);
+    var onOwn = m.to !== 'off' && st.points[m.to].c === player;   // landing on own checkers = stack
     BG.applyMoveTo(st, player, m);
     st.remaining.splice(st.remaining.indexOf(m.die), 1);
     st.movesThisTurn++;
     S.selected = null;
 
     if (m.to === 'off') {
-      sfx.off();
       var n = st.off[player], left = 15 - n;
+      if (st.winner === -1) sfx.off();
       if (isC) {
-        if (!S.firstOff[0]) { S.firstOff[0] = true; say(0, pick(V.cathyOffFirst)); setAvatar(ART.bama, 4000); faceMood('face-bama', 4000); }
+        if (!S.firstOff[0]) { S.firstOff[0] = true; say(0, pick(V.cathyOffFirst)); setAvatar(ART.bama, 4000); faceMood('face-bama', 4000); if (st.winner === -1) sfx.cheese(); }
         else if (st.winner === -1) say(0, fmt(pick(V.cathyOff), { n: n, left: left }));
       } else if (st.winner === -1) {
         say(1, fmt(pick(V.jasonOff), { n: n, left: left }));
@@ -580,13 +768,13 @@
       if (isC) { say(0, pick(V.cathyHit)); say(1, pick(V.jasonGotHit), false); setAvatar(ART.dog, 3500); faceMood('face-dog', 3500); }
       else { say(1, pick(V.jasonHit)); say(0, pick(V.cathyGotHit), false); }
     } else if (m.from === 'bar') {
-      sfx.move();
-      say(player, isC ? pick(V.cathyEnter) : 'Jason\'s back in. Shrugging like it was the plan.');
+      sfx.enter();
+      say(player, pick(isC ? V.cathyEnter : V.jasonEnter));
     } else {
-      sfx.move();
+      if (onOwn) sfx.stack(); else sfx.place();
       if (!wasHome && BG.allInHome(st, player) && st.winner === -1) {
         say(player, pick(isC ? V.cathyAllHome : V.jasonAllHome));
-        if (isC) { setAvatar(ART.bama, 3500); }
+        if (isC) { setAvatar(ART.bama, 3500); sfx.cheese(); }
       } else if (isC && st.bar[0] > 0) {
         say(0, pick(V.cathyMoreFromBar));
       } else if (S.rand() < (isC ? 0.55 : 0.4)) {
@@ -630,8 +818,9 @@
     rollFor(1);
     sfx.roll();
     var a = S.st.dice[0], b = S.st.dice[1];
-    if (!S.options.length) say(1, pick(V.jasonDance));
-    else if (S.st.dice.length === 4) say(1, fmt(pick(V.jasonDoubles), { a: a }));
+    if (!S.options.length) { say(1, pick(V.jasonDance)); setTimeout(sfx.dance, 450); }
+    else if (S.st.dice.length === 4) { say(1, fmt(pick(V.jasonDoubles), { a: a })); setTimeout(sfx.doubles, 450); }
+    else if (S.st.bar[1] > 0) say(1, fmt(pick(V.jasonBarRoll), { a: a, b: b }));
     else say(1, fmt(pick(V.jasonRoll), { a: a, b: b }));
     render();
     setTimeout(aiStep, 800);
@@ -653,27 +842,27 @@
   // ---------- input ----------
   function onPointTap(idx) {
     if (!isHumanTurn() || !S.st.rolled) {
-      if (isHumanTurn() && !S.st.rolled) say(me(), me() === 0 ? 'Tap ROLL first, Mom! 🎲' : 'Roll first, Jason. 🎲');
+      if (isHumanTurn() && !S.st.rolled) say(me(), me() === 0 ? pick(V.rollFirst) : 'Roll first, Jason. 🎲');
       return;
     }
     var st = S.st, player = me();
     var isSrc = S.options.some(function (o) { return o.from === idx; });
     if (S.selected === null) {
-      if (st.points[idx].c === player && isSrc) { S.selected = idx; sfx.select(); render(); }
+      if (st.points[idx].c === player && isSrc) { S.selected = idx; sfx.pickup(); render(); }
       return;
     }
-    if (S.selected === idx) { S.selected = null; render(); return; }
+    if (S.selected === idx) { S.selected = null; sfx.tap(); render(); return; }
     var m = bestOption(S.selected, idx);
     if (m) { doMove(m); return; }
-    if (st.points[idx].c === player && isSrc) { S.selected = idx; sfx.select(); render(); }
-    else { S.selected = null; render(); }
+    if (st.points[idx].c === player && isSrc) { S.selected = idx; sfx.pickup(); render(); }
+    else { S.selected = null; sfx.tap(); render(); }
   }
 
   function onBarTap() {
     if (!isHumanTurn() || !S.st.rolled) return;
-    if (S.selected === 'bar') { S.selected = null; render(); return; }
+    if (S.selected === 'bar') { S.selected = null; sfx.tap(); render(); return; }
     if (S.options.some(function (o) { return o.from === 'bar'; })) {
-      S.selected = 'bar'; sfx.select(); render();
+      S.selected = 'bar'; sfx.pickup(); render();
     }
   }
 
@@ -682,7 +871,7 @@
     S.st = S.history.pop();
     S.selected = null;
     refreshOptions();
-    say(me(), me() === 0 ? pick(['Undone. Mulligans are a mom right. ↩️', 'Take-backsies granted. ↩️']) : 'Jason took it back. Typical. ↩️');
+    say(me(), me() === 0 ? pick(V.undo) : 'Jason took it back. Typical. ↩️');
     render();
   }
 
@@ -692,7 +881,7 @@
     if (!m) return;
     var from = m.from === 'bar' ? 'the Bar' : 'point ' + (m.from + 1);
     var to = m.to === 'off' ? 'OFF the board 🏁' : 'point ' + (m.to + 1);
-    say(0, fmt(pick(V.hint), { from: from, to: to }));
+    say(0, fmt(pick(V.hint), { from: from, to: to, why: hintWhy(m) }));
     var fromEl = m.from === 'bar' ? $('bar-col') : pointEls[m.from];
     fromEl.classList.add('flash');
     if (m.to !== 'off') pointEls[m.to].classList.add('flash');
@@ -713,25 +902,54 @@
     'Somebody wants cake. And bragging rights. 🎂',
     'The cheese stands alone. On top. 🏁',
     'I MADE IT! (You made it.) 🏆',
+    'PROGRAM: BAMA 2026 — COMPLETE. Great workout, Cathy. 🚴🏆',
+    'The hound is doing a victory lap around the living room. 🐾🏆',
+    'Purple bag, packed. Trophy, packed. Jason, humbled. 👜🏆',
+    'Cheddar, brie, and Cathy: three things that only get better. 🧀🏆',
   ];
+  var WIN_SAY = [
+    'I MADE IT! 🏁🏆',
+    'CHEESE CATHY WINS! Somebody call Bama. 🧀🏆',
+    'Winner! Release the hound for a lap of honor. 🐾🏆',
+    'PROGRAM COMPLETE. Cooldown: bragging. 🚴🏆',
+  ];
+  var LOSE_SUB = [
+    'Good game, Cathy! Demand a rematch. 😄',
+    'He got lucky. Everyone saw it. Rematch. 🐾',
+    'The hound is displeased. Again? 🐾',
+    'Jason won. He\'ll bring it up at every holiday. Rematch now. 🎲',
+    'A moral victory for cheese. A regular victory for Jason. Rematch. 🧀',
+    'The purple bag says: one more. 👜',
+  ];
+  var LOSE_SAY = [
+    'Release the hound. Rematch. 🐾',
+    'Fine. FINE. Rematch, Jason. Right now. 🎲',
+    'Well played, sweetie. Now let me win one back. 🧀',
+    'The console says TRY AGAIN. The console knows me. 🚴',
+  ];
+  var JASON_LOST = ['Robo-Jason: "…recalculating."', 'Robo-Jason: "This outcome was not in my training data."', 'Robo-Jason: "Rematch. For science."'];
+  var JASON_LOST_HOTSEAT = ['Jason: "Best of three?"', 'Jason: "I let you win." He did not.', 'Jason: "The dice hate me." They do, Jason.'];
+  var JASON_WON = ['{name}: "GG, Mom. Love you. Rematch?"', '{name}: "Don\'t be mad. Okay be a little mad."', '{name}: "I\'m putting this on the fridge."'];
   function onWin(player) {
     S.over = true; S.busy = false;
     var kind = BG.winKind(S.st, player);
     var kindTxt = kind === 2 ? 'BACKGAMMON! Triple! 🤯' : kind === 1 ? 'GAMMON! Double! ✨' : 'a win!';
-    sfx.win();
+    // Cathy is the star: her win gets the stinger; a Robo-Jason win gets the sad trombone.
+    // In hotseat a Jason win is still a human win, so it keeps the win stinger.
+    if (player === 0 || S.mode !== 'ai') sfx.win(); else sfx.lose();
     var title = $('win-title'), sub = $('win-sub'), photo = $('win-photo');
     photo.onerror = function () { photo.onerror = null; photo.src = photo.src.replace(/\.png$/, '.svg'); };
     if (player === 0) {
       title.textContent = '🧀 Cathy wins — ' + kindTxt;
       sub.textContent = pick(WIN_LINES);
       photo.src = ART.bama;
-      say(0, 'I MADE IT! 🏁🏆'); say(1, S.mode === 'ai' ? 'Robo-Jason: "…recalculating."' : 'Jason: "Best of three?"', false);
+      say(0, pick(WIN_SAY)); say(1, pick(S.mode === 'ai' ? JASON_LOST : JASON_LOST_HOTSEAT), false);
       setAvatar(ART.bama);
     } else {
       title.textContent = S.names[1] + ' wins — ' + kindTxt;
-      sub.textContent = pick(['Good game, Cathy! Demand a rematch. 😄', 'He got lucky. Everyone saw it. Rematch. 🐾', 'The hound is displeased. Again? 🐾']);
+      sub.textContent = pick(LOSE_SUB);
       photo.src = 'assets/photos/01-mom-dog-hybrid.png';
-      say(1, S.names[1] + ': "GG, Mom. Love you. Rematch?"'); say(0, 'Release the hound. Rematch. 🐾', false);
+      say(1, fmt(pick(JASON_WON), { name: S.names[1] })); say(0, pick(LOSE_SAY), false);
       setAvatar(ART.dog);
     }
     setTimeout(function () { $('overlay-win').classList.remove('hidden'); }, 900);
@@ -745,28 +963,30 @@
   }
   function start(mode) { show('game'); newGame(mode); }
 
-  $('btn-vs-ai').addEventListener('click', function () { start('ai'); });
-  $('btn-hotseat').addEventListener('click', function () { start('hotseat'); });
-  $('btn-how').addEventListener('click', function () { $('overlay-help').classList.remove('hidden'); });
-  $('btn-close-help').addEventListener('click', function () { $('overlay-help').classList.add('hidden'); });
+  $('btn-vs-ai').addEventListener('click', function () { sfx.tap(); start('ai'); });
+  $('btn-hotseat').addEventListener('click', function () { sfx.tap(); start('hotseat'); });
+  $('btn-how').addEventListener('click', function () { sfx.tap(); $('overlay-help').classList.remove('hidden'); });
+  $('btn-close-help').addEventListener('click', function () { sfx.tap(); $('overlay-help').classList.add('hidden'); });
   $('btn-roll').addEventListener('click', doRoll);
-  $('btn-undo').addEventListener('click', onUndo);
-  $('btn-hint').addEventListener('click', onHint);
-  $('btn-pass').addEventListener('click', function () { msg(''); endTurn(); });
-  $('btn-new').addEventListener('click', function () { newGame(S.mode); });
-  $('btn-menu').addEventListener('click', function () { show('title'); });
-  $('btn-again').addEventListener('click', function () { newGame(S.mode); });
-  $('btn-win-menu').addEventListener('click', function () { $('overlay-win').classList.add('hidden'); show('title'); });
+  $('btn-undo').addEventListener('click', function () { if (isHumanTurn() && S.history.length) sfx.tap(); onUndo(); });
+  $('btn-hint').addEventListener('click', function () { if (isHumanTurn() && S.options.length) sfx.tap(); onHint(); });
+  $('btn-pass').addEventListener('click', function () { sfx.tap(); msg(''); endTurn(); });
+  $('btn-new').addEventListener('click', function () { sfx.tap(); newGame(S.mode); });
+  $('btn-menu').addEventListener('click', function () { sfx.tap(); show('title'); });
+  $('btn-again').addEventListener('click', function () { sfx.tap(); newGame(S.mode); });
+  $('btn-win-menu').addEventListener('click', function () { sfx.tap(); $('overlay-win').classList.add('hidden'); show('title'); });
   $('btn-sound').addEventListener('click', function () {
     soundOn = !soundOn;
+    sfx.setMuted(!soundOn);
     $('btn-sound').textContent = soundOn ? '🔊 Sound on' : '🔇 Sound off';
+    if (soundOn) { sfx.unlock(); sfx.tap(); }   // audible confirmation that sound is back
   });
   [0, 1].forEach(function (ix) {
     offBox(ix).addEventListener('click', function () {
       if (!isHumanTurn() || S.selected === null || ix !== me()) return;
       var m = bestOption(S.selected, 'off');
       if (m) doMove(m);
-      else { sfx.bad(); say(me(), 'That one can\'t bear off yet — all 15 have to be home first. 🏁'); }
+      else { sfx.bad(); say(me(), pick(V.cantOff)); }
     });
   });
   $('dice-row').addEventListener('click', function () { if (isHumanTurn() && !S.st.rolled) doRoll(); });

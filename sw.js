@@ -1,11 +1,12 @@
 /* Cathy's Backgammon — offline cache (GitHub Pages friendly). */
-const CACHE = 'cathy-backgammon-v3';
+const CACHE = 'cathy-backgammon-v4';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './engine.js',
   './ai.js',
+  './sfx.js',
   './app.js',
   './manifest.webmanifest',
   './assets/icon.svg',
