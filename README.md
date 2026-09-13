@@ -27,6 +27,11 @@ Tips for Mom:
 - Tap the **dice** or the big **ROLL** button — both roll.
 - **Ask Cathy** lights up the move she'd make. **Undo** takes the last one back.
 - If the board ever looks squished, rotate the iPad once; it re-fits itself.
+- **Sound**: the dice tumble, checkers knock, hits go *BONK*, and there's a fanfare when you
+  win. iPad only allows audio after you tap something, so **the first tap on ROLL wakes it up**
+  (nothing to grant, no popup). The **🔊 Sound on** key on the right rail mutes everything;
+  tap it again to turn it back on. If the iPad's side switch / Control Center is on silent,
+  the game is silent too.
 
 ## How to play (30 seconds)
 
@@ -105,7 +110,31 @@ Screenshot helpers (render at iPad landscape sizes: 1024×768, 1180×820, 1194×
 - Portrait (`orientation: portrait`) stacks board over `[players | console]`;
   phones (≤640px) fall back to a scrolling single column.
 
-Files: `engine.js` (rules, no deps, browser+node), `ai.js` (soft 1-ply AI),
-`app.js` (UI, voice lines, presence, flow, console fit), `styles.css` (console skin + grid),
-`sw.js` (offline cache), `manifest.webmanifest` (Add to Home Screen; PNG icons in `assets/`),
-`screenshots/`.
+### Sound (`sfx.js`)
+
+All sound is **synthesized in WebAudio** — no audio files, nothing extra to cache, works
+offline. `window.CathySfx` exposes one function per moment: `roll` (dice tumble + two clacks),
+`doubles` (4-note arcade riff), `dance` (no-move womp), `pickup` / `place` / `stack` (checker
+chirp / knock / knock+tick), `enter` (whoosh in from the bar), `hit` (kick thump + smack +
+cartoon boing), `off` (tray coin chime), `cheese` (tiny brass fanfare: first bear-off, all home),
+`win` / `lose` (arpeggio + chord / sad trombone), `tap` (console key), `bad` (buzzer).
+Everything runs through one gain → compressor bus so stacked hits don't clip the iPad speaker.
+
+- The `AudioContext` is created lazily on the **first sound, which is always a user tap**
+  (ROLL, a checker, a key) — that satisfies iOS's gesture rule with no prompt. A
+  `pointerdown` listener also resumes the context if iOS suspended it in the background.
+- `setMuted(true)` makes every call a no-op; `app.js` wires that to the **🔊 Sound on** key.
+- Headless Chrome / the `?shot=smoke` run never touches audio hardware: with no gesture the
+  context just stays suspended and every call is a silent no-op.
+
+### Voice lines
+
+Banter lives in the `V` table in `app.js`, one array per moment (`cathyRoll`, `cathyHit`,
+`jasonGotHit`, `hint`, …). `pick()` never returns the same line from the same list twice in a
+row. `Ask Cathy` fills `{why}` from `hintWhy()` (hit / bear off / bar / makes a point / safe /
+race) so the joke still carries a real reason.
+
+Files: `engine.js` (rules, no deps, browser+node), `ai.js` (soft 1-ply AI), `sfx.js` (WebAudio
+sound kit), `app.js` (UI, voice lines, presence, flow, console fit), `styles.css` (console skin
++ grid), `sw.js` (offline cache), `manifest.webmanifest` (Add to Home Screen; PNG icons in
+`assets/`), `screenshots/`.
